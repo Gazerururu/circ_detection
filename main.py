@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import csv
 
 def display(title, name):
     cv2.imshow(title, name)
@@ -11,7 +12,7 @@ AL = ['AL_ハッチング1_照明あり_IOHD0024 - frame at 0m3s.jpg', 'AL_ハ�
 SUS = ['SUS_ハッチング1_照明あり_IOHD0017 - frame at 0m3s.jpg', 'SUS_ハッチング1_照明なし_IOHD0020 - frame at 0m3s.jpg', 'SUS_ハッチング2_照明あり_IOHD0018 - frame at 0m3s.jpg', 'SUS_ハッチング2_照明なし_IOHD0021 - frame at 0m3s.jpg', 'SUS_円のみ_照明あり_IOHD0016 - frame at 0m3s.jpg', 'SUS_円のみ_照明なし_IOHD0019 - frame at 0m3s.jpg']
 
 #img = './AL/' + AL[4]
-img = './SUS/' + SUS[0]
+img = './SUS/' + SUS[2]
 
 img_color = cv2.imread(img)
 print(img_color.shape)
@@ -42,11 +43,14 @@ if circles is not None:
         cv2.circle(img_binary3, (circle[0], circle[1]), 2, (0, 0, 255), 3)
     display('after', img_binary3)
         
-    for circle in circles[0, :]:
-        # 円周を描画する
-        cv2.circle(img_color, (circle[0], circle[1]), circle[2], (0, 165, 255), 5)
-        # 中心点を描画する
-        cv2.circle(img_color, (circle[0], circle[1]), 2, (0, 0, 255), 3)
-    display('after', img_color)
+    with open('./result.csv', 'a') as f:
+        writer = csv.writer(f)
+        for circle in circles[0, :]:
+            # 円周を描画する
+            cv2.circle(img_color, (circle[0], circle[1]), circle[2], (0, 165, 255), 5)
+            # 中心点を描画する
+            cv2.circle(img_color, (circle[0], circle[1]), 2, (0, 0, 255), 3)
 
-cv2.imwrite("after.png", img_color)
+            writer.writerow([str(circle[0]), str(circle[1])])
+        display('result', img_color)
+        cv2.imwrite("result.png", img_color)
